@@ -1,0 +1,13 @@
+services:
+  tcpScannerApp:
+    build:
+      context: .
+      dockerfile: dockerfile
+    container_name: tcpScannerApp
+    ports:
+      - "${APP_PORT}:${APP_PORT}"
+    env_file:
+      - .env
+    volumes:
+      - .:/usr/src/app
+    restart: unless-stopped
