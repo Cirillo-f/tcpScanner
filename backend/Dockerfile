@@ -1,4 +1,4 @@
-FROM golang1.23
+FROM golang:1.23
 
 WORKDIR /usr/src/app
 
@@ -6,12 +6,16 @@ COPY ["go.mod", "go.sum", "./"]
 
 RUN go mod download
 
-COPY . /usr/src/app/
+COPY . .
 
-RUN go build -o tcpScannerApp
+RUN go build -o app cmd/app/main.go
 
 COPY .env .env
 
 EXPOSE 8080
 
+
 CMD ["./app"]
+
+
+
