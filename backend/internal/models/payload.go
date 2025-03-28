@@ -1,5 +1,5 @@
 package models
 
 type URL struct {
-	URL string `json:"url"`
+	Host string `json:"host"`
 }

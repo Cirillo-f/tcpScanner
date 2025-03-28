@@ -14,7 +14,7 @@ func HandleBody(w *http.ResponseWriter, r *http.Request) (*models.URL, error) {
 		return nil, err
 	}
 
-	err = isValid(body.URL)
+	err = isValid(body.Host)
 	if err != nil {
 		res.Json(*w, err.Error(), http.StatusPaymentRequired)
 		return nil, err
