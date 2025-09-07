@@ -14,38 +14,59 @@ type ScanHandler struct{}
 func NewScanHandler(router *http.ServeMux) {
 	handler := ScanHandler{}
 
-	// Регистрируем обработчик для /scan
 	router.HandleFunc("/scan", handler.scanner())
+
+	router.HandleFunc("/health", handler.health())
 }
 
 func (handler *ScanHandler) scanner() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// Устанавливаем CORS заголовки на каждый запрос
-		w.Header().Set("Access-Control-Allow-Origin", "*")              // Разрешаем доступ с любых доменов
-		w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS") // Разрешаем методы POST и OPTIONS
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")  // Разрешаем Content-Type заголовки
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
-		// Если это запрос OPTIONS, сразу завершаем его без дальнейшей обработки
 		if r.Method == http.MethodOptions {
 			w.WriteHeader(http.StatusOK)
 			return
 		}
 
-		// Быстрая проверка тела запроса для POST
 		body, err := utils.HandleBody(&w, r)
 		if err != nil {
 			res.Json(w, err.Error(), http.StatusPaymentRequired)
 			return
 		}
 
-		// Запускаем сканирование
 		openPorts := scanner.TCPScanner(body.Host)
 
-		// Отправляем ответ
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]interface{}{
 			"host":       body.Host,
 			"open_ports": openPorts,
+		})
+	}
+}
+
+func (handler *ScanHandler) health() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		if r.Method != http.MethodGet {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(map[string]string{
+			"status":  "healthy",
+			"service": "tcp-scanner",
 		})
 	}
 }

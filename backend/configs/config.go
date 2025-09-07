@@ -14,10 +14,18 @@ type Config struct {
 func LoadConfig() *Config {
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("[ERROR]: Error while reading data from .env$", err)
+		log.Println("[WARNING]: .env file not found, using environment variables")
+	}
+
+	port := os.Getenv("APP_PORT")
+	if port == "" {
+		port = os.Getenv("PORT")
+		if port == "" {
+			port = ":8080"
+		}
 	}
 
 	return &Config{
-		PORT: os.Getenv("APP_PORT"),
+		PORT: port,
 	}
 }

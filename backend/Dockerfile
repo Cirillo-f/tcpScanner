@@ -1,19 +1,24 @@
-FROM golang:1.23
+FROM golang:1.23-alpine AS builder
 
 WORKDIR /usr/src/app
 
-COPY ["go.mod", "go.sum", "./"]
+RUN apk add --no-cache git
 
+COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
+RUN CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -o app cmd/app/main.go
 
-RUN go build -o app cmd/app/main.go
+FROM alpine:latest
 
-COPY .env .env
+RUN apk --no-cache add ca-certificates tzdata
+
+WORKDIR /root/
+
+COPY --from=builder /usr/src/app/app .
 
 EXPOSE 8080
-
 
 CMD ["./app"]
 
