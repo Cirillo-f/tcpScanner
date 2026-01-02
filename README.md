@@ -1,59 +1,64 @@
-# TCP-Scanner
+````markdown
+# TCP Scanner
 
-## Описание сервиса
+## Service Overview
 
-Этот сервис выполняет сканирование TCP-портов для заданного хоста. Он проверяет, какие порты открыты, а какие закрыты в диапазоне от 1 до 65,535 (все возможные TCP порты).
+This service performs TCP port scanning for a specified host. It checks which ports are open and which are closed within the range from **1 to 65,535** (all valid TCP ports).
 
-## Архитектура
+## Architecture
 
-Проект состоит из двух частей:
-- **Backend** - Go API сервер с использованием стандартной библиотеки net/http
-- **Frontend** - Статический веб-интерфейс на HTML/CSS/JavaScript
+The project consists of two main components:
+- **Backend** - a Go API server built using the standard `net/http` library
+- **Frontend** - a static web interface implemented with HTML, CSS, and JavaScript
 
-## Быстрый запуск с Docker
+## Quick Start with Docker
 
-### Требования
-- Docker
-- Docker Compose
+### Requirements
+- Docker  
+- Docker Compose  
 
-### Запуск всего проекта одной командой
+### Run the Entire Project with a Single Command
 
 ```bash
-// Клонируем репозиторий
+# Clone the repository
 git clone <repository-url>
 cd tcpScanner
 
-// Собираем приложение
+# Build and start the application
 docker-compose up --build
-```
+````
 
-После запуска:
-- **Frontend** будет доступен по адресу: http://localhost:3000
-- **Backend API** будет доступен по адресу: http://localhost:8080
+After startup:
 
-### Остановка
+* **Frontend** will be available at: [http://localhost:3000](http://localhost:3000)
+* **Backend API** will be available at: [http://localhost:8080](http://localhost:8080)
+
+### Stopping the Project
 
 ```bash
-# Остановить контейнеры
+# Stop containers
 docker-compose down
 
-# Остановить и удалить volumes
+# Stop containers and remove volumes
 docker-compose down -v
 ```
 
-## API Документация
+## API Documentation
 
 ### [POST] /scan
-Сканирует TCP порты для указанного хоста.
 
-**Запрос:**
+Scans TCP ports for the specified host.
+
+**Request:**
+
 ```json
 {
     "host": "example.com"
 }
 ```
 
-**Ответ:**
+**Response:**
+
 ```json
 {
     "host": "example.com",
@@ -62,9 +67,11 @@ docker-compose down -v
 ```
 
 ### [GET] /health
-Проверка состояния сервиса.
 
-**Ответ:**
+Service health check endpoint.
+
+**Response:**
+
 ```json
 {
     "status": "healthy",
@@ -72,20 +79,18 @@ docker-compose down -v
 }
 ```
 
+## Performance
 
-## Производительность
+Scan duration depends on the target host, network latency, and firewall configuration.
 
-Время сканирования зависит от размера хоста, сетевых задержек и фаерволов.
+Approximate scan times for popular targets:
 
-Примерное время работы для популярных сайтов:
-- `scanme.nmap.org` = 25 секунд ±
-- `sberbank.ru` = 2 минуты 25 секунд ± 
-- `outline.com` = 1 минута 15 секунд ±
+* `scanme.nmap.org` - ~25 seconds
+* `sberbank.ru` - ~2 minutes 25 seconds
+* `outline.com` - ~1 minute 15 seconds
 
+## Security
 
-## Безопасность
-
-- Валидация входных данных на уровне API
-- CORS настройки для безопасного взаимодействия frontend-backend
-- Проверка форматов IP адресов и доменных имен
-
+* Input validation at the API level
+* CORS configuration for secure frontend–backend interaction
+* Validation of IP address and domain name formats
