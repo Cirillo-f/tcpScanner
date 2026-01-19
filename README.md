@@ -1,96 +1,52 @@
-markdown
-# TCP Scanner
+# tcpScanner
 
-## Service Overview
+TCP port scanner CLI tool. Scans ports and shows what's open.
 
-This service performs TCP port scanning for a specified host. It checks which ports are open and which are closed within the range from **1 to 65,535** (all valid TCP ports).
-
-## Architecture
-
-The project consists of two main components:
-- **Backend** - a Go API server built using the standard `net/http` library
-- **Frontend** - a static web interface implemented with HTML, CSS, and JavaScript
-
-## Quick Start with Docker
-
-### Requirements
-- Docker  
-- Docker Compose  
-
-### Run the Entire Project with a Single Command
+## Build
 
 ```bash
-# Clone the repository
-git clone <repository-url>
-cd tcpScanner
+cd script
+go build -o tcpScanner ./cmd/app
+```
 
-# Build and start the application
-docker-compose up --build
-````
-
-After startup:
-
-* **Frontend** will be available at: [http://localhost:3000](http://localhost:3000)
-* **Backend API** will be available at: [http://localhost:8080](http://localhost:8080)
-
-### Stopping the Project
+## Usage
 
 ```bash
-# Stop containers
-docker-compose down
+# Scan popular ports
+./tcpScanner -d example.com -p
 
-# Stop containers and remove volumes
-docker-compose down -v
+# Scan all 65535 ports
+./tcpScanner -d 192.168.1.1 -a
+
+# Show help
+./tcpScanner -h
 ```
 
-## API Documentation
+## Flags
 
-### [POST] /scan
+- `-d` - Domain or IP address (required)
+- `-a` - Scan all 65535 ports
+- `-p` - Scan popular ports only
+- `-h` - Show help
 
-Scans TCP ports for the specified host.
+## Output
 
-**Request:**
+Shows open ports with service names (like nmap):
 
-```json
-{
-    "host": "example.com"
-}
+```
+Starting scan for example.com (58 popular ports)
+====================================================
+Scanning... | [58/58] 100.0%
+====================================================
+
+Found 3 open port(s):
+PORT     STATE  SERVICE
+----------------------
+80/tcp   open   http
+443/tcp  open   https
+22/tcp   open   ssh
 ```
 
-**Response:**
+## Popular Ports
 
-```json
-{
-    "host": "example.com",
-    "open_ports": [80, 443, 22, 8080]
-}
-```
-
-### [GET] /health
-
-Service health check endpoint.
-
-**Response:**
-
-```json
-{
-    "status": "healthy",
-    "service": "tcp-scanner"
-}
-```
-
-## Performance
-
-Scan duration depends on the target host, network latency, and firewall configuration.
-
-Approximate scan times for popular targets:
-
-* `scanme.nmap.org` - ~25 seconds
-* `sberbank.ru` - ~2 minutes 25 seconds
-* `outline.com` - ~1 minute 15 seconds
-
-## Security
-
-* Input validation at the API level
-* CORS configuration for secure frontend–backend interaction
-* Validation of IP address and domain name formats
+Scans common ports: FTP, SSH, HTTP, HTTPS, databases (MySQL, PostgreSQL, MongoDB), remote access (RDP, VNC), and more.
